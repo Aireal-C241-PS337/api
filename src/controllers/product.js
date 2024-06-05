@@ -1,7 +1,6 @@
 const { FieldValue } = require('@google-cloud/firestore');
 const { firestore } = require('../firebase');
 const bucket = require('../storage/storage');
-const { all } = require('../routes/routes');
 
 const collectionRef = firestore.collection('products');
 
