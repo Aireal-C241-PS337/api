@@ -104,49 +104,6 @@ exports.getAll = async (req, res) => {
   }
 };
 
-exports.create = async (req, res) => {
-  const { name, email, password, username, gender, address, phone_number } =
-    req.body;
-
-  try {
-    const imageUrl = await uploadFiles(req.files);
-    const docRef = await collectionRef.add({
-      name,
-      email,
-      password,
-      username,
-      gender,
-      address,
-      phone_number,
-      image_url: imageUrl,
-      createdAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
-    });
-    const newUser = {
-      id: docRef.id,
-      name,
-      email,
-      password,
-      username,
-      gender,
-      address,
-      phone_number,
-      image_url,
-    };
-
-    return res.status(201).json({
-      status: 'success',
-      data: newUser,
-    });
-  } catch (error) {
-    console.error('Error creating user:', error);
-    return res.status(500).json({
-      status: 'error',
-      message: 'Internal Server Error',
-    });
-  }
-};
-
 exports.getById = async (req, res) => {
   const { id } = req.params;
 
