@@ -2,15 +2,12 @@ const bcrypt = require('bcrypt');
 const { FieldValue } = require('@google-cloud/firestore');
 const { firestore } = require('../firebase');
 const { generateToken } = require('../utils/auth');
+const uploadFiles = require('../utils/uploadFiles');
 
 const collectionRef = firestore.collection('users');
 
 exports.register = async (req, res) => {
-  const {
-    name,
-    email,
-    password,
-  } = req.body;
+  const { name, email, password } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -100,18 +97,11 @@ exports.getAll = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  const {
-    name,
-    email,
-    password,
-    username,
-    gender,
-    address,
-    phone_number,
-    image_url,
-  } = req.body;
+  const { name, email, password, username, gender, address, phone_number } =
+    req.body;
 
   try {
+    const imageUrl = await uploadFiles(req.files);
     const docRef = await collectionRef.add({
       name,
       email,
@@ -120,7 +110,7 @@ exports.create = async (req, res) => {
       gender,
       address,
       phone_number,
-      image_url,
+      image_url: imageUrl,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });
@@ -176,18 +166,11 @@ exports.getById = async (req, res) => {
 
 exports.update = async (req, res) => {
   const { id } = req.params;
-  const {
-    name,
-    email,
-    password,
-    username,
-    gender,
-    address,
-    phone_number,
-    image_url,
-  } = req.body;
+  const { name, email, password, username, gender, address, phone_number } =
+    req.body;
 
   try {
+    const imageUrl = await uploadFiles(req.files);
     const docRef = collectionRef.doc(id);
     const doc = await docRef.get();
     if (!doc.exists) {
@@ -205,7 +188,7 @@ exports.update = async (req, res) => {
       gender,
       address,
       phone_number,
-      image_url,
+      image_url: imageUrl,
       updatedAt: FieldValue.serverTimestamp(),
     });
 
@@ -220,7 +203,7 @@ exports.update = async (req, res) => {
         gender,
         address,
         phone_number,
-        image_url,
+        image_url: imageUrl,
       },
     });
   } catch (error) {

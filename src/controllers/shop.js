@@ -1,5 +1,6 @@
 const { FieldValue } = require('@google-cloud/firestore');
 const { firestore } = require('../firebase');
+const uploadFiles = require('../utils/uploadFiles');
 
 const collectionRef = firestore.collection('shops');
 
@@ -24,10 +25,10 @@ exports.getAll = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  const { userId, name, description, street, city, province, image_url } =
-    req.body;
+  const { userId, name, description, street, city, province } = req.body;
 
   try {
+    const imageUrl = await uploadFiles(req.files);
     const docRef = await collectionRef.add({
       userId,
       name,
@@ -35,7 +36,7 @@ exports.create = async (req, res) => {
       street,
       city,
       province,
-      image_url,
+      image_url: imageUrl,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });
@@ -47,7 +48,7 @@ exports.create = async (req, res) => {
       street,
       city,
       province,
-      image_url,
+      image_url: imageUrl,
     };
 
     return res.status(201).json({
@@ -91,10 +92,10 @@ exports.getById = async (req, res) => {
 
 exports.update = async (req, res) => {
   const { id } = req.params;
-  const { userId, name, description, street, city, province, image_url } =
-    req.body;
+  const { userId, name, description, street, city, province } = req.body;
 
   try {
+    const imageUrl = await uploadFiles(req.files);
     const docRef = collectionRef.doc(id);
     const doc = await docRef.get();
     if (!doc.exists) {
@@ -111,7 +112,7 @@ exports.update = async (req, res) => {
       street,
       city,
       province,
-      image_url,
+      image_url: imageUrl,
       updatedAt: FieldValue.serverTimestamp(),
     });
 
