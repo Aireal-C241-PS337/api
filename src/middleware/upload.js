@@ -1,5 +1,4 @@
 const multer = require('multer');
-const bucket = require('../storage/storage');
 
 const multerStorage = multer.memoryStorage();
 
@@ -11,3 +10,4 @@ const upload = multer({
 });
 
 exports.array = (fieldName) => upload.array(fieldName);
+exports.single = (fieldName) => upload.single(fieldName);
