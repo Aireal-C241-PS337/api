@@ -132,10 +132,10 @@ exports.update = async (req, res) => {
     longdescription,
     price,
     stock,
-    image_url,
   } = req.body;
 
   try {
+    const imageUrl = await uploadFiles(req.files);
     const docRef = collectionRef.doc(id);
     const doc = await docRef.get();
     if (!doc.exists) {
@@ -153,7 +153,7 @@ exports.update = async (req, res) => {
       longdescription,
       price,
       stock,
-      image_url,
+      image_url: imageUrl,
       updatedAt: FieldValue.serverTimestamp(),
     });
 
