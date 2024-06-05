@@ -1,7 +1,28 @@
 const { FieldValue } = require('@google-cloud/firestore');
 const { firestore } = require('../firebase');
+const bucket = require('../storage/storage');
 
 const collectionRef = firestore.collection('products');
+
+async function uploadFile(file) {
+  const blob = bucket.file(Date.now() + file.originalname);
+  const blobStream = blob.createWriteStream({
+    resumable: false,
+  });
+
+  return new Promise((resolve, reject) => {
+    blobStream
+      .on('finish', async () => {
+        const publicUrl = `https://storage.googleapis.com/aireal-bucket/${blob.name}`;
+        resolve(publicUrl);
+      })
+      .on('error', (err) => {
+        reject(err);
+      })
+      .end(file.buffer);
+  });
+}
+
 
 exports.getAll = async (req, res) => {
   try {
@@ -32,9 +53,9 @@ exports.create = async (req, res) => {
     longdescription,
     price,
     stock,
-    image_url,
   } = req.body;
   try {
+    const imageUrl = await uploadFile(req.file);
     const docRef = await collectionRef.add({
       shopId,
       categoryId,
@@ -43,7 +64,7 @@ exports.create = async (req, res) => {
       longdescription,
       price,
       stock,
-      image_url,
+      image_url: imageUrl,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });
@@ -56,7 +77,7 @@ exports.create = async (req, res) => {
       longdescription,
       price,
       stock,
-      image_url,
+      image_url: imageUrl,
     };
 
     return res.status(201).json({
