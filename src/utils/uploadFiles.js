@@ -22,3 +22,5 @@ async function uploadFiles(files) {
 
   return Promise.all(promises);
 }
+
+module.exports = uploadFiles;
