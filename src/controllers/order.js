@@ -66,3 +66,47 @@ exports.placeOrder = async (req, res) => {
     });
   }
 };
+
+exports.getAllOrders = async (req, res) => {
+  try {
+    const snapshot = await orderCollection.get();
+    const orders = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return res.status(200).json({
+      status: 'success',
+      data: orders,
+    });
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Internal Server Error',
+    });
+  }
+};
+
+exports.getOrdersByUser = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const snapshot = await orderCollection.where('userId', '==', userId).get();
+    const orders = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return res.status(200).json({
+      status: 'success',
+      data: orders,
+    });
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Internal Server Error',
+    });
+  }
+};
