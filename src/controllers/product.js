@@ -4,25 +4,28 @@ const bucket = require('../storage/storage');
 
 const collectionRef = firestore.collection('products');
 
-async function uploadFile(file) {
-  const blob = bucket.file(Date.now() + file.originalname);
-  const blobStream = blob.createWriteStream({
-    resumable: false,
+async function uploadFiles(files) {
+  const promises = files.map((file) => {
+    const blob = bucket.file(Date.now() + '-' + file.originalname);
+    const blobStream = blob.createWriteStream({
+      resumable: false,
+    });
+
+    return new Promise((resolve, reject) => {
+      blobStream
+        .on('finish', () => {
+          const publicUrl = `https://storage.googleapis.com/aireal-bucket/${blob.name}`;
+          resolve(publicUrl);
+        })
+        .on('error', (err) => {
+          reject(err);
+        })
+        .end(file.buffer);
+    });
   });
 
-  return new Promise((resolve, reject) => {
-    blobStream
-      .on('finish', async () => {
-        const publicUrl = `https://storage.googleapis.com/aireal-bucket/${blob.name}`;
-        resolve(publicUrl);
-      })
-      .on('error', (err) => {
-        reject(err);
-      })
-      .end(file.buffer);
-  });
+  return Promise.all(promises);
 }
-
 
 exports.getAll = async (req, res) => {
   try {
@@ -55,7 +58,7 @@ exports.create = async (req, res) => {
     stock,
   } = req.body;
   try {
-    const imageUrl = await uploadFile(req.file);
+    const imageUrl = await uploadFiles(req.files);
     const docRef = await collectionRef.add({
       shopId,
       categoryId,
@@ -129,10 +132,10 @@ exports.update = async (req, res) => {
     longdescription,
     price,
     stock,
-    image_url,
   } = req.body;
 
   try {
+    const imageUrl = await uploadFiles(req.files);
     const docRef = collectionRef.doc(id);
     const doc = await docRef.get();
     if (!doc.exists) {
@@ -150,7 +153,7 @@ exports.update = async (req, res) => {
       longdescription,
       price,
       stock,
-      image_url,
+      image_url: imageUrl,
       updatedAt: FieldValue.serverTimestamp(),
     });
 
