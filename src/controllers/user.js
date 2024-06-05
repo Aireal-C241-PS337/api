@@ -10,11 +10,6 @@ exports.register = async (req, res) => {
     name,
     email,
     password,
-    username,
-    gender,
-    address,
-    phone_number,
-    image_url,
   } = req.body;
 
   try {
@@ -23,11 +18,6 @@ exports.register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      username,
-      gender,
-      address,
-      phone_number,
-      image_url,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });
