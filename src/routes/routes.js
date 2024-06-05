@@ -20,9 +20,9 @@ router.put('/users/:id', authMiddleware, userController.update);
 router.delete('/users/:id', authMiddleware, userController.delete);
 
 router.get('/shops', authMiddleware, shopController.getAll);
-router.post('/shops', authMiddleware, shopController.create);
+router.post('/shops', authMiddleware, upload.array('image'), shopController.create);
 router.get('/shops/:id', authMiddleware, shopController.getById);
-router.put('/shops/:id', authMiddleware, shopController.update);
+router.put('/shops/:id', authMiddleware, upload.array('image'), shopController.update);
 router.delete('/shops/:id', authMiddleware, shopController.delete);
 
 router.get('/categories', authMiddleware, categoryController.getAll);
@@ -34,7 +34,7 @@ router.delete('/categories/:id', authMiddleware, categoryController.delete);
 router.get('/products', authMiddleware, productController.getAll);
 router.post('/products', authMiddleware, upload.array('image'), productController.create);
 router.get('/products/:id', authMiddleware, productController.getById);
-router.put('/products/:id', authMiddleware, productController.update);
+router.put('/products/:id', authMiddleware, upload.array('image'), productController.update);
 router.delete('/products/:id', authMiddleware, productController.delete);
 
 router.post('/cart', authMiddleware, cartController.addToCart);

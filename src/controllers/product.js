@@ -112,7 +112,11 @@ exports.update = async (req, res) => {
   } = req.body;
 
   try {
-    const imageUrl = await uploadFiles(req.files);
+    let imageUrls = [];
+    if (req.files && req.files.length > 0) {
+      imageUrls = await uploadFiles(req.files);
+    }
+
     const docRef = collectionRef.doc(id);
     const doc = await docRef.get();
     if (!doc.exists) {
@@ -122,7 +126,7 @@ exports.update = async (req, res) => {
       });
     }
 
-    await docRef.update({
+    const updateData = {
       shopId,
       categoryId,
       name,
@@ -130,12 +134,22 @@ exports.update = async (req, res) => {
       longdescription,
       price,
       stock,
-      image_url: imageUrl,
       updatedAt: FieldValue.serverTimestamp(),
-    });
+    };
+
+    if (name !== undefined) {
+      updateData.name = name;
+    }
+
+    if (imageUrls.length > 0) {
+      updateData.image_urls = imageUrls;
+    }
+
+    await docRef.update(updateData);
 
     return res.status(200).json({
       status: 'success',
+      data: updateData,
       message: 'Product updated successfully',
     });
   } catch (error) {
@@ -146,6 +160,7 @@ exports.update = async (req, res) => {
     });
   }
 };
+
 
 exports.delete = async (req, res) => {
   const { id } = req.params;

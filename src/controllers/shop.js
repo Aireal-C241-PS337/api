@@ -1,6 +1,7 @@
 const { FieldValue } = require('@google-cloud/firestore');
 const { firestore } = require('../firebase');
 const uploadFiles = require('../utils/uploadFiles');
+const { update } = require('./product');
 
 const collectionRef = firestore.collection('shops');
 
@@ -95,9 +96,9 @@ exports.update = async (req, res) => {
   const { userId, name, description, street, city, province } = req.body;
 
   try {
-    const imageUrl = await uploadFiles(req.files);
     const docRef = collectionRef.doc(id);
     const doc = await docRef.get();
+
     if (!doc.exists) {
       return res.status(404).json({
         status: 'error',
@@ -105,7 +106,13 @@ exports.update = async (req, res) => {
       });
     }
 
-    await docRef.update({
+    let imageUrl = doc.data().image_url;
+    if (req.files && req.files.length > 0) {
+      const imageUrls = await uploadFiles(req.files);
+      imageUrl = imageUrls[0];
+    }
+
+    const updatedShop = {
       userId,
       name,
       description,
@@ -114,11 +121,14 @@ exports.update = async (req, res) => {
       province,
       image_url: imageUrl,
       updatedAt: FieldValue.serverTimestamp(),
-    });
+    };
+
+    await docRef.update(updatedShop);
 
     return res.status(200).json({
       status: 'success',
       message: 'Shop updated successfully',
+      data: { id: doc.id, ...updatedShop },
     });
   } catch (error) {
     console.error('Error updating shop:', error);
