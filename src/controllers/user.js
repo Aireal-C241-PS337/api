@@ -10,6 +10,14 @@ exports.register = async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
+    const existingUser = await collectionRef.where('email', '==', email).get();
+    if (!existingUser.empty) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'email already in use. Please login instead.',
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await collectionRef.add({
       name,
@@ -194,6 +202,7 @@ exports.update = async (req, res) => {
 
     return res.status(200).json({
       status: 'success',
+      message: 'success updating user.',
       data: {
         id,
         name,
@@ -232,6 +241,7 @@ exports.delete = async (req, res) => {
 
     return res.status(200).json({
       status: 'success',
+      message: 'success deleting user.',
       data: { id },
     });
   } catch (error) {

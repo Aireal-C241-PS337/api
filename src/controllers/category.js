@@ -27,6 +27,14 @@ exports.create = async (req, res) => {
   const { name } = req.body;
 
   try {
+    const existingCategory = await collectionRef.where('name', '==', name).get();
+    if (!existingCategory.empty) {
+      return res.status(400).json({
+        status: 'error',
+        messege: 'category already exist'
+      })
+    }
+
     const docRef = await collectionRef.add({
       name,
       createdAt: FieldValue.serverTimestamp(),
