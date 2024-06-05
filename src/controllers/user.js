@@ -135,6 +135,7 @@ exports.update = async (req, res) => {
     req.body;
 
   try {
+    const hashedPassword = await bcrypt.hash(password, 10);
     const imageUrl = await uploadFiles(req.files);
     const docRef = collectionRef.doc(id);
     const doc = await docRef.get();
@@ -148,7 +149,7 @@ exports.update = async (req, res) => {
     await docRef.update({
       name,
       email,
-      password,
+      password: hashedPassword,
       username,
       gender,
       address,
@@ -164,7 +165,7 @@ exports.update = async (req, res) => {
         id,
         name,
         email,
-        password,
+        password: hashedPassword,
         username,
         gender,
         address,
