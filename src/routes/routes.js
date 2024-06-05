@@ -32,7 +32,7 @@ router.put('/categories/:id', authMiddleware, categoryController.update);
 router.delete('/categories/:id', authMiddleware, categoryController.delete);
 
 router.get('/products', authMiddleware, productController.getAll);
-router.post('/products', authMiddleware, upload.single('image'), productController.create);
+router.post('/products', authMiddleware, upload.array('image'), productController.create);
 router.get('/products/:id', authMiddleware, productController.getById);
 router.put('/products/:id', authMiddleware, productController.update);
 router.delete('/products/:id', authMiddleware, productController.delete);

@@ -10,4 +10,4 @@ const upload = multer({
     },
 });
 
-exports.single = (fieldName) => upload.single(fieldName);
+exports.array = (fieldName) => upload.array(fieldName);
