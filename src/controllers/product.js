@@ -3,10 +3,43 @@ const { firestore } = require('../firebase');
 const uploadFiles = require('../utils/uploadFiles')
 
 const collectionRef = firestore.collection('products');
+const categoryCollection = firestore.collection('categories');
+const shopCollection = firestore.collection('shops');
 
 exports.getAll = async (req, res) => {
+  const { category, name } = req.query;
   try {
-    const snapshot = await collectionRef.get();
+    let query = collectionRef;
+
+    if (category) {
+      const categorySnapshot = await categoryCollection.where('name', '==', category).get();
+      
+      if (categorySnapshot.empty) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Category not found',
+        });
+      }
+
+      const categoryDoc = categorySnapshot.docs[0];
+      const categoryId = categoryDoc.id;
+
+      query = query.where('categoryId', '==', categoryId);
+    }
+
+    if (name) {
+      query = query.where('name', '>=', name).where('name', '<=', name + '\uf8ff');
+    }
+    
+    const snapshot = await query.get();
+
+    if (snapshot.empty) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'No product found matching the criteria',
+      });
+    }
+
     const products = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
@@ -35,6 +68,22 @@ exports.create = async (req, res) => {
     stock,
   } = req.body;
   try {
+    const categoryDoc = await categoryCollection.doc(categoryId).get();
+    if (!categoryDoc.exists) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Category not found'
+      })
+    }
+
+    const shopDoc = await shopCollection.doc(shopId).get();
+    if (!shopDoc.exists) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Shop not found'
+      })
+    }
+
     const imageUrl = await uploadFiles(req.files);
     const docRef = await collectionRef.add({
       shopId,
@@ -112,9 +161,9 @@ exports.update = async (req, res) => {
   } = req.body;
 
   try {
-    let imageUrls = [];
+    let imageUrl = [];
     if (req.files && req.files.length > 0) {
-      imageUrls = await uploadFiles(req.files);
+      imageUrl = await uploadFiles(req.files);
     }
 
     const docRef = collectionRef.doc(id);
@@ -141,8 +190,8 @@ exports.update = async (req, res) => {
       updateData.name = name;
     }
 
-    if (imageUrls.length > 0) {
-      updateData.image_urls = imageUrls;
+    if (imageUrl.length > 0) {
+      updateData.image_url = imageUrl;
     }
 
     await docRef.update(updateData);
