@@ -20,6 +20,7 @@ router.put('/users/:id', authMiddleware, upload.array('image'), userController.u
 router.delete('/users/:id', authMiddleware, userController.delete);
 
 router.get('/shops', authMiddleware, shopController.getAll);
+router.get('/shops/user/:userId', authMiddleware, shopController.getByUserId);
 router.post('/shops', authMiddleware, upload.array('image'), shopController.create);
 router.get('/shops/:id', authMiddleware, shopController.getById);
 router.put('/shops/:id', authMiddleware, upload.array('image'), shopController.update);
@@ -32,6 +33,7 @@ router.put('/categories/:id', authMiddleware, categoryController.update);
 router.delete('/categories/:id', authMiddleware, categoryController.delete);
 
 router.get('/products', authMiddleware, productController.getAll);
+router.get('/products/shop/:shopId', authMiddleware, productController.getByShopId);
 router.post('/products', authMiddleware, upload.array('image'), productController.create);
 router.get('/products/:id', authMiddleware, productController.getById);
 router.put('/products/:id', authMiddleware, upload.array('image'), productController.update);

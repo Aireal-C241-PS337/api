@@ -1,7 +1,6 @@
 const { FieldValue } = require('@google-cloud/firestore');
 const { firestore } = require('../firebase');
 const uploadFiles = require('../utils/uploadFiles');
-const { update } = require('./product');
 
 const collectionRef = firestore.collection('shops');
 
@@ -81,6 +80,36 @@ exports.getById = async (req, res) => {
     return res.status(200).json({
       status: 'success',
       data: { id: doc.id, ...doc.data() },
+    });
+  } catch (error) {
+    console.error('Error fetching shop:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Internal Server Error',
+    });
+  }
+};
+
+exports.getByUserId = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const snapshot = await collectionRef.where('userId', '==', userId).get();
+    if (snapshot.empty) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Shop not found',
+      });
+    }
+
+    const shop = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }))[0];
+
+    return res.status(200).json({
+      status: 'success',
+      data: shop,
     });
   } catch (error) {
     console.error('Error fetching shop:', error);

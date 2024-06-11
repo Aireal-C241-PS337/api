@@ -148,6 +148,44 @@ exports.getById = async (req, res) => {
   }
 };
 
+exports.getByShopId = async (req, res) => {
+  const { shopId } = req.params;
+
+  try {
+    const shopDoc = await shopCollection.doc(shopId).get();
+    if (!shopDoc.exists) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Shop not found',
+      });
+    }
+
+    const snapshot = await collectionRef.where('shopId', '==', shopId).get();
+
+    if (snapshot.empty) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'No product found for this shop',
+      });
+    }
+
+    const products = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return res.status(200).json({
+      status: 'success',
+      data: products,
+    });
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Internal Server Error',
+    });
+  }
+};
+
 exports.update = async (req, res) => {
   const { id } = req.params;
   const {
