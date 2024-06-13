@@ -28,6 +28,14 @@ exports.create = async (req, res) => {
   const { userId, name, description, street, city, province } = req.body;
 
   try {
+    const snapshot = await collectionRef.where('userId', '==', userId).get();
+    if (!snapshot.empty) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'User already has a shop',
+      });
+    }
+
     const imageUrl = await uploadFiles(req.files);
     const docRef = await collectionRef.add({
       userId,
@@ -135,10 +143,10 @@ exports.update = async (req, res) => {
       });
     }
 
-    let imageUrl = doc.data().image_url;
+    let imageUrls = doc.data().image_url || [];
     if (req.files && req.files.length > 0) {
-      const imageUrls = await uploadFiles(req.files);
-      imageUrl = imageUrls[0];
+      const newImageUrls = await uploadFiles(req.files);
+      imageUrls[0] = newImageUrls[0];
     }
 
     const updatedShop = {
@@ -148,7 +156,7 @@ exports.update = async (req, res) => {
       street,
       city,
       province,
-      image_url: imageUrl,
+      image_url: imageUrls.slice(0, 1),
       updatedAt: FieldValue.serverTimestamp(),
     };
 
@@ -167,6 +175,7 @@ exports.update = async (req, res) => {
     });
   }
 };
+
 
 exports.delete = async (req, res) => {
   const { id } = req.params;
