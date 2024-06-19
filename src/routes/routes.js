@@ -45,6 +45,6 @@ router.get('/cart', authMiddleware, cartController.viewCart);
 
 router.post('/order', authMiddleware, orderController.placeOrder);
 router.get('/order', authMiddleware, orderController.getAllOrders);
-router.get('/order/:id', authMiddleware, orderController.getOrdersByUser);
+router.get('/orders/user/:userId', authMiddleware, orderController.getOrdersByUser);
 
 module.exports = router;

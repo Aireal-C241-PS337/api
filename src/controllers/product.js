@@ -30,6 +30,8 @@ exports.getAll = async (req, res) => {
     if (name) {
       query = query.where('name', '>=', name).where('name', '<=', name + '\uf8ff');
     }
+
+    query = query.limit(15);
     
     const snapshot = await query.get();
 
