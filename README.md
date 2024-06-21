@@ -1,10 +1,10 @@
-# AiReal API
+# 🛒 AiReal API
 
-## Introduction
+## 📖 Introduction
 
 AiReal API provides endpoints to manage carts, place orders, and retrieve orders. The backend is built using Node.js and Express.js, deployed on Google App Engine, with Firestore for data storage and Google Cloud Storage for storing images.
 
-## Getting Started
+## 🛠️ Getting Started
 
 To run this project locally:
 
@@ -14,9 +14,22 @@ To run this project locally:
 
 For environment variables, please contact the repository owner.
 
-## API Documentation
+## 📚 Table of Contents
 
-### Authentication
+- [Introduction](#-introduction)
+- [Getting Started](#-getting-started)
+- [API Documentation](#-api-documentation)
+  - [Authentication](#-authentication)
+  - [Endpoints](#-endpoints)
+    - [View Cart](#-view-cart)
+    - [Place Order](#-place-order)
+    - [Get All Orders](#-get-all-orders)
+    - [Get All Orders By UserId](#-get-all-orders-by-userid)
+- [Running the Project Locally](#-running-the-project-locally)
+
+## 📝 API Documentation
+
+### 🔐 Authentication
 
 All endpoints require a Bearer Token for authentication. Include the token in the `Authorization` header:
 
@@ -24,10 +37,11 @@ All endpoints require a Bearer Token for authentication. Include the token in th
 Authorization: Bearer <token>
 ```
 
-### Endpoints
-These are just some of them, if you wanna see all the endpoints. Please check our Postman documentation: https://documenter.getpostman.com/view/26776811/2sA3QwapMh#intro
+### 🔗 Endpoints
 
-#### 1. View Cart
+These are just some of them. If you want to see all the endpoints, please check our Postman documentation: [Postman Documentation](https://documenter.getpostman.com/view/26776811/2sA3QwapMh#intro)
+
+#### 1. 🛒 View Cart
 
 **GET /api/cart**
 
@@ -71,7 +85,7 @@ curl --location "https://capstone-aireal.et.r.appspot.com/api/cart?userId=PXkcry
 }
 ```
 
-#### 2. Place Order
+#### 2. 🛍️ Place Order
 
 **POST /api/order**
 
@@ -103,7 +117,7 @@ curl --location "https://capstone-aireal.et.r.appspot.com/api/order" \
 }
 ```
 
-#### 3. Get All Orders
+#### 3. 📦 Get All Orders
 
 **GET /api/order**
 
@@ -144,7 +158,7 @@ curl --location "https://capstone-aireal.et.r.appspot.com/api/order" \
 }
 ```
 
-#### 4. Get All Orders By UserId
+#### 4. 📑 Get All Orders By UserId
 
 **GET /api/orders/user/:userId**
 
@@ -187,7 +201,7 @@ curl --location "https://capstone-aireal.et.r.appspot.com/api/orders/user/i9bIuF
 }
 ```
 
-## Running the Project Locally
+## 💻 Running the Project Locally
 
 1. **Clone the repository**:
 
